@@ -30,6 +30,8 @@ public class BouncingBallApp {
         BallPanel ballPanel = new BallPanel();
         frame.add(ballPanel);
         frame.setVisible(true);
+        // Ensure key bindings are active by requesting focus
+        SwingUtilities.invokeLater(ballPanel::requestFocusInWindow);
         return ballPanel;
     }
 }
