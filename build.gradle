@@ -1,13 +1,25 @@
 plugins {
     id 'java'
     id 'application'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 group = 'org.example'
-version = '1.0-SNAPSHOT'
+version = (findProperty('releaseVersion') ?: '1.0-SNAPSHOT').toString()
+
+def applicationMainClass = 'org.example.BouncingBallApp'
 
 repositories {
     mavenCentral()
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
 }
 
 dependencies {
@@ -19,15 +31,30 @@ test {
     useJUnitPlatform()
 }
 
-
 jar {
     manifest {
         attributes(
-                'Main-Class': 'org.example.BouncingBallApp'
+                'Main-Class': applicationMainClass
         )
     }
 }
 
+shadowJar {
+    archiveBaseName.set(rootProject.name)
+    archiveClassifier.set('')
+    archiveVersion.set(project.version.toString())
+    mergeServiceFiles()
+    manifest {
+        attributes(
+                'Main-Class': applicationMainClass
+        )
+    }
+}
+
+build {
+    dependsOn shadowJar
+}
+
 application {
-    mainClass = 'org.example.BouncingBallApp'
+    mainClass = applicationMainClass
 }
